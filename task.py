@@ -24,3 +24,34 @@
 #
 #Delete these comments before commit!
 #Good luck.
+
+def unzip(matrix):
+	return [item for sublist in matrix for item in sublist]
+
+class Matrix:
+
+	def __init__(self, m11, m12, m21, m22):
+		self.matrix = [[m11,m12],[m21, m22]]
+
+	def sum(self, toAdd):
+
+		that = self.matrix
+		other = toAdd.matrix
+
+		l = [[that[i][j] + other[i][j]  for j in range(len(that[0]))] for i in range(len(that))]
+		return Matrix( * [item for sublist in l for item in sublist])
+
+	def __repr__(self):
+		return "Matrix [ {}, {}, {} ,{} ]".format(*unzip(self.matrix))
+
+
+	def product(self, other):
+		A = self.matrix
+		B = other.matrix
+		C = [[0 for row in range(len(A))] for col in range(len(B[0]))]
+		for i in range(len(A)):
+			for j in range(len(B[0])):
+				for k in range(len(B)):
+					C[i][j] += A[i][k]*B[k][j]
+		return Matrix(*unzip(C))
+		
