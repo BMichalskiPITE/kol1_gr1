@@ -25,8 +25,6 @@
 #Delete these comments before commit!
 #Good luck.
 
-def unzip(matrix):
-	return [item for sublist in matrix for item in sublist]
 
 class Matrix:
 
@@ -42,7 +40,7 @@ class Matrix:
 		return Matrix( * [item for sublist in l for item in sublist])
 
 	def __repr__(self):
-		return "Matrix [ {}, {}, {} ,{} ]".format(*unzip(self.matrix))
+		return "Matrix [ {}, {}, {} ,{} ]".format(*Matrix.unzip(self.matrix))
 
 
 	def product(self, other):
@@ -53,8 +51,11 @@ class Matrix:
 			for j in range(len(B[0])):
 				for k in range(len(B)):
 					C[i][j] += A[i][k]*B[k][j]
-		return Matrix(*unzip(C))
+		return Matrix(*Matrix.unzip(C))
 
+	@staticmethod
+	def unzip(matrix):
+		return [item for sublist in matrix for item in sublist]
 if __name__ == "__main__":
 	matrix_1 = Matrix(4,5,6,7)
 	matrix_2 = Matrix(2,8,1,5)
