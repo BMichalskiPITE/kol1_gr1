@@ -40,7 +40,7 @@ class Matrix:
 		return Matrix( * [item for sublist in l for item in sublist])
 
 	def __repr__(self):
-		return "Matrix [ {}, {}, {} ,{} ]".format(*Matrix.unzip(self.matrix))
+		return "Matrix [ {}, {}, {} ,{} ]".format(*Matrix.flatten(self.matrix))
 
 
 	def product(self, other):
@@ -51,10 +51,10 @@ class Matrix:
 			for j in range(len(B[0])):
 				for k in range(len(B)):
 					C[i][j] += A[i][k]*B[k][j]
-		return Matrix(*Matrix.unzip(C))
+		return Matrix(*Matrix.flatten(C))
 
 	@staticmethod
-	def unzip(matrix):
+	def flatten(matrix):
 		return [item for sublist in matrix for item in sublist]
 if __name__ == "__main__":
 	matrix_1 = Matrix(4,5,6,7)
