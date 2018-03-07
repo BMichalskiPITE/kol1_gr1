@@ -56,6 +56,7 @@ class Matrix:
 	@staticmethod
 	def flatten(matrix):
 		return [item for sublist in matrix for item in sublist]
+
 if __name__ == "__main__":
 	matrix_1 = Matrix(4,5,6,7)
 	matrix_2 = Matrix(2,8,1,5)
