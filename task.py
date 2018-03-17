@@ -1,72 +1,94 @@
-#Write a library that contains a class that can represent any 2𝑥2 real matrice. 
-#Include two functions to calculate the sum and product of two matrices. 
-#Next, write a program that imports this library module and use it to perform calculations.
-#Examples:
-#
-# matrix_1 = Matrix(4,5,6,7)
-# matrix_2 = Matrix(2,2,2,1)
-#
-# matrix_3 = matrix_2.add(matrix_1)
-#
-#Try to expand your implementation as best as you can. 
-#Think of as many features as you can, and try implementing them.
-#(If you want you can expand implementation to NxN matrix.)
-#Make intelligent use of pythons syntactic sugar (overloading, iterators, generators, etc)
-#Most of all: CREATE GOOD, RELIABLE, READABLE CODE.
-#The goal of this task is for you to SHOW YOUR BEST python programming skills.
-#Impress everyone with your skills, show off with your code.
-#
-#Your program must be runnable with command "python task.py".
-#Show some usecases of your library in the code (print some things)
-#
-#When you are done upload this code to your github repository. 
-#The whole repository MUST be a fork from https://github.com/mwmajew/kol1_gr1.py
-#
-#Delete these comments before commit!
-#Good luck.
+import numbers
 
+class MatrixError(Exception):
+	def __inti__(self, error):
+		super.__init__(error)
 
 class Matrix:
 
-	def __init__(self, m11, m12, m21, m22):
-		self.matrix = [[m11,m12],[m21, m22]]
+	def __init__(self, *args):
+	
+		self.matrix_size = int(len(args) ** 0.5)
+		
+		if not (len(args) ** 0.5).is_integer():
+			raise MatrixError("Cannot cerate square matrix")
+		
+		for element in args:
+			if not isinstance(element, numbers.Number):
+				raise MatrixError("Only numbers allowed as matrix elements")
+				
+		self.matrix = []
+		for i in range(self.matrix_size):
+			self.matrix.append([x for x in args[i * self.matrix_size : (i+1) * self.matrix_size]])
 
-	def sum(self, toAdd):
+	def __add__(self, to_add):
 
-		that = self.matrix
-		other = toAdd.matrix
-
-		l = [[that[i][j] + other[i][j]  for j in range(len(that[0]))] for i in range(len(that))]
-		return Matrix( * [item for sublist in l for item in sublist])
-
+		if isinstance(to_add, numbers.Number):
+			return self + Matrix(*([to_add] * self.matrix_size ** 2))
+		
+		if isinstance(to_add, Matrix):
+			if not self.matrix_size == to_add.matrix_size:
+				raise MatrixError("Matrices has different sizes")
+			result_matrix = []
+			for i in range(self.matrix_size):
+				row = []
+				for j in range(self.matrix_size):
+					row.append(self.matrix[i][j] + to_add.matrix[i][j])
+				result_matrix.append(row)
+			return Matrix(*Matrix.flatten(result_matrix))
+			
+		raise MatrixError("Unexpected argument")
+		
+	def __radd__(self, to_add):
+		return self.__add__(to_add)
+		
+	def __mul__(self, to_mul):
+		if isinstance(to_mul, numbers.Number):
+			return self * Matrix(*([to_mul] * self.matrix_size ** 2))
+		
+		if isinstance(to_mul, Matrix):
+			if not self.matrix_size == to_mul.matrix_size:
+				raise MatrixError("Matrices has different sizes")
+			result_matrix = [[0 for _ in range(self.matrix_size)] for _ in range(self.matrix_size)]
+			for i in range(self.matrix_size):
+				for j in range(self.matrix_size):
+					for k in range(self.matrix_size):
+						result_matrix[i][j] += self.matrix[i][k]*to_mul.matrix[k][j]
+			return Matrix(*Matrix.flatten(result_matrix))
+			
+		raise MatrixError("Unexpected argument")
+	
+	def __rmul__(self,to_mul):
+		return self.__mul__(to_mul)
+	
 	def __repr__(self):
-		return "Matrix [ {}, {}, {} ,{} ]".format(*Matrix.flatten(self.matrix))
-
-
-	def product(self, other):
-		A = self.matrix
-		B = other.matrix
-		C = [[0 for row in range(len(A))] for col in range(len(B[0]))]
-		for i in range(len(A)):
-			for j in range(len(B[0])):
-				for k in range(len(B)):
-					C[i][j] += A[i][k]*B[k][j]
-		return Matrix(*Matrix.flatten(C))
-
+	
+		def format(elements):
+			return ["{}".format(element) for element in elements]
+		
+		def format_with_brackets(elements, delimiter):
+			return "[{}]".format(delimiter.join(elements))
+			
+		rows = [format_with_brackets(format(row), ", ") for row in self.matrix]
+		return format_with_brackets(rows,",\n")
+		
 	@staticmethod
 	def flatten(matrix):
-		return [item for sublist in matrix for item in sublist]
+		return [element for row in matrix for element in row]
 
 if __name__ == "__main__":
 	matrix_1 = Matrix(4,5,6,7)
 	matrix_2 = Matrix(2,8,1,5)
 
-	sumOfMatrices = matrix_1.sum(matrix_2)
-	productOfMatrices = matrix_1.product(matrix_2)
+	sumOfMatrices = matrix_1 + matrix_2
+	productOfMatrices = matrix_1 * matrix_2
 
-	print( "Matrix 1: {}".format(matrix_1) )
-	print( "Matrix 2: {}".format(matrix_2) )
+	print( "Matrix 1: \n{}".format(matrix_1) )
+	print( "Matrix 2: \n{}".format(matrix_2) )
 
 
-	print( "Sum: {}".format(sumOfMatrices) )
-	print( "Product: {}".format(productOfMatrices) )
+	print( "Sum: \n{}".format(sumOfMatrices) )
+	print( "Product: \n{}".format(productOfMatrices) )
+	print( "1 + Matrix_1: \n{}".format( 1 * matrix_1) )
+	
+	
