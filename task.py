@@ -20,7 +20,7 @@ class Matrix:
 		self.matrix = []
 		for i in range(self.matrix_size):
 			self.matrix.append([x for x in args[i * self.matrix_size : (i+1) * self.matrix_size]])
-
+				
 	def __add__(self, to_add):
 
 		if isinstance(to_add, numbers.Number):
@@ -41,6 +41,33 @@ class Matrix:
 		
 	def __radd__(self, to_add):
 		return self.__add__(to_add)
+
+	def __sub__(self, to_sub):
+
+		if isinstance(to_sub, numbers.Number):
+			return self - Matrix(*([to_sub] * self.matrix_size ** 2))
+		
+		if isinstance(to_sub, Matrix):
+			if not self.matrix_size == to_sub.matrix_size:
+				raise MatrixError("Matrices has different sizes")
+			result_matrix = []
+			for i in range(self.matrix_size):
+				row = []
+				for j in range(self.matrix_size):
+					row.append(self.matrix[i][j] - to_sub.matrix[i][j])
+				result_matrix.append(row)
+			return Matrix(*Matrix.flatten(result_matrix))
+			
+		raise MatrixError("Unexpected argument")
+		
+	def __rsub__(self, to_sub):
+		if isinstance(to_sub, numbers.Number):
+			return Matrix(*([to_sub] * self.matrix_size ** 2)) - self
+		
+		if isinstance(to_sub, Matrix):
+			to_sub - self
+			
+		raise MatrixError("Unexpected argument")
 		
 	def __mul__(self, to_mul):
 		if isinstance(to_mul, numbers.Number):
@@ -83,12 +110,15 @@ if __name__ == "__main__":
 	sumOfMatrices = matrix_1 + matrix_2
 	productOfMatrices = matrix_1 * matrix_2
 
-	print( "Matrix 1: \n{}".format(matrix_1) )
-	print( "Matrix 2: \n{}".format(matrix_2) )
+	print( "Matrix 1: \n{}\n".format(matrix_1) )
+	print( "Matrix 2: \n{}\n".format(matrix_2) )
 
 
-	print( "Sum: \n{}".format(sumOfMatrices) )
-	print( "Product: \n{}".format(productOfMatrices) )
-	print( "1 + Matrix_1: \n{}".format( 1 * matrix_1) )
+	print( "Sum: \n{}\n".format(sumOfMatrices) )
+	print( "Product: \n{}\n".format(productOfMatrices) )
+	print( "1 + Matrix_1: \n{}\n".format( 1 + matrix_1) )
+	print( "1 * Matrix_1: \n{}\n".format( 1 * matrix_1) )
 	
+	print( "Sub: \n{}\n".format(matrix_1 - matrix_2) )
+	print( "1 - Matrix_1: \n{}\n".format( 1 - matrix_1) )
 	
